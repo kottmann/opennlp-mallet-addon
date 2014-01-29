@@ -86,8 +86,8 @@ public class MaxentTrainer extends AbstractEventTrainer {
     Alphabet.alphabetsMatch(trainingData, inst);
     trainingData.addAll(instances);
 
-    cc.mallet.classify.ClassifierTrainer trainer = new MaxEntTrainer();
-
+    MaxEntTrainer trainer = new MaxEntTrainer();
+    
     Classifier classifier = trainer.train(trainingData);
 
     return new ClassifierModel(classifier);
