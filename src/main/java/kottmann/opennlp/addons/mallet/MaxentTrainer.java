@@ -22,7 +22,6 @@ package kottmann.opennlp.addons.mallet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import opennlp.tools.ml.AbstractEventTrainer;
@@ -48,26 +47,8 @@ public class MaxentTrainer extends AbstractEventTrainer {
     return true;
   }
 
-  // TODO: Turn this into a util method and share between impls ...
-  private Map<String, Integer> createPrepMap(DataIndexer indexer) {
-    Map<String, Integer> predMap = new HashMap<String, Integer>();
-
-    String predLabels[] = indexer.getPredLabels();
-    for (int i = 0; i < predLabels.length; i++) {
-      predMap.put(predLabels[i], i);
-    }
-
-    return predMap;
-  }
-
   @Override
   public MaxentModel doTrain(DataIndexer indexer) throws IOException {
-
-    // NOTE: One of the issues here is that the alphabet needs to be stored
-    // as well. Therefore the is no reason not to directly use the alphabet to
-    // encode
-    // the features.
-    // It doesn't look like there is any down side to not use it directly!
 
     int numFeatures = indexer.getPredLabels().length;
 
@@ -104,8 +85,6 @@ public class MaxentTrainer extends AbstractEventTrainer {
 
     Alphabet.alphabetsMatch(trainingData, inst);
     trainingData.addAll(instances);
-
-    System.out.println(targetAlphabet);
 
     cc.mallet.classify.ClassifierTrainer trainer = new MaxEntTrainer();
 
