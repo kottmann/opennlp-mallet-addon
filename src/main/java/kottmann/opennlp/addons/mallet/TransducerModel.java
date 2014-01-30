@@ -26,19 +26,25 @@ import java.util.List;
 import opennlp.tools.ml.model.SequenceClassificationModel;
 import opennlp.tools.util.BeamSearchContextGenerator;
 import opennlp.tools.util.SequenceValidator;
+import opennlp.tools.util.model.SerializableArtifact;
 import cc.mallet.fst.CRF;
 import cc.mallet.fst.MaxLatticeDefault;
+import cc.mallet.fst.Transducer;
 import cc.mallet.types.Alphabet;
 import cc.mallet.types.FeatureVector;
 import cc.mallet.types.FeatureVectorSequence;
 import cc.mallet.types.Sequence;
 
-public class TransducerModel<T> implements SequenceClassificationModel<T> {
+public class TransducerModel<T> implements SequenceClassificationModel<T>, SerializableArtifact {
 
-  private CRF model;
+  private Transducer model;
 
-  public TransducerModel(CRF model) {
+  public TransducerModel(Transducer model) {
     this.model = model;
+  }
+  
+  Transducer getModel() {
+    return model;
   }
   
   public opennlp.tools.util.Sequence bestSequence(T[] sequence,
@@ -51,7 +57,8 @@ public class TransducerModel<T> implements SequenceClassificationModel<T> {
       T[] sequence, Object[] additionalContext,
       BeamSearchContextGenerator<T> cg, SequenceValidator<T> validator) {
 
-    Alphabet dataAlphabet = model.getInputAlphabet();
+    // TODO: CRF.getInputAlphabet
+    Alphabet dataAlphabet = model.getInputPipe().getAlphabet();
     
     FeatureVector featureVectors[] = new FeatureVector[sequence.length];
     
@@ -110,4 +117,8 @@ public class TransducerModel<T> implements SequenceClassificationModel<T> {
     return outcomeSequences;
   }
 
+  @Override
+  public Class<?> getArtifactSerializerClass() {
+    return TransducerModelSerializer.class;
+  }
 }
